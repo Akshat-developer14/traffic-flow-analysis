@@ -4,6 +4,7 @@ import numpy as np
 import joblib
 import os
 from datetime import datetime
+from zoneinfo import ZoneInfo
 
 # Set page configuration
 st.set_page_config(
@@ -72,16 +73,21 @@ st.sidebar.header("📍 Input Parameters")
 with st.sidebar:
     use_current = st.checkbox("Use Current Time & Date", value=True)
     
+    # Define user timezone
+    user_tz = ZoneInfo("Asia/Kolkata")
+    
     if use_current:
-        st.session_state.selected_date = datetime.now().date()
-        st.session_state.selected_time = datetime.now().time()
-        st.info(f"Using: {st.session_state.selected_date} {st.session_state.selected_time.strftime('%H:%M')}")
+        now = datetime.now(user_tz)
+        st.session_state.selected_date = now.date()
+        st.session_state.selected_time = now.time()
+        st.info(f"Using: {st.session_state.selected_date} {st.session_state.selected_time.strftime('%H:%M')} (IST)")
     else:
         # Initialize session state if not present
-        if 'selected_date' not in st.session_state or use_current:
-            st.session_state.selected_date = datetime.now().date()
-        if 'selected_time' not in st.session_state or use_current:
-            st.session_state.selected_time = datetime.now().time()
+        now = datetime.now(user_tz)
+        if 'selected_date' not in st.session_state:
+            st.session_state.selected_date = now.date()
+        if 'selected_time' not in st.session_state:
+            st.session_state.selected_time = now.time()
             
         st.session_state.selected_date = st.date_input("Select Date", st.session_state.selected_date)
         st.session_state.selected_time = st.time_input("Select Time", st.session_state.selected_time)

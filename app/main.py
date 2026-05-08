@@ -174,34 +174,47 @@ with col1:
         })
         cluster_pred = models['clusterer'].predict(features_cluster)[0]
         
+        cluster_names = {
+            0: "🌙 Late Night Flow",
+            1: "🌆 Afternoon Rush",
+            2: "📉 Off-Peak / Holiday",
+            3: "🌅 Morning Rush Hour",
+            4: "🏙️ Weekend Mid-day",
+            5: "🌃 Evening Flow"
+        }
+
+        cluster_name = cluster_names.get(cluster_pred, f"Cluster {cluster_pred}")
+        
         # Display Results
         st.markdown(f"""
         <div class="prediction-card">
-            <h2 style='text-align: center; color: #ff4b4b;'>Prediction Results</h2>
-            <hr>
-            <div style='display: flex; justify-content: space-around; flex-wrap: wrap;'>
-                <div style='text-align: center; margin: 10px;'>
-                    <p style='font-size: 0.9em; color: #888;'>Traffic Volume</p>
-                    <h3 style='font-size: 2.5em;'>{int(vol_pred)}</h3>
-                    <p style='font-size: 0.8em;'>Vehicles/Hour</p>
+            <h2 style='text-align: center; color: #ff4b4b; margin-bottom: 20px;'>Prediction Results</h2>
+            <div style='display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; text-align: center;'>
+                <div>
+                    <p style='font-size: 0.9em; color: #888; margin: 0;'>Traffic Volume</p>
+                    <h3 style='font-size: 2em; margin: 5px 0;'>{int(vol_pred)}</h3>
+                    <p style='font-size: 0.8em; margin: 0;'>Vehicles/Hour</p>
                 </div>
-                <div style='text-align: center; margin: 10px;'>
-                    <p style='font-size: 0.9em; color: #888;'>Congestion Level</p>
-                    <h3 style='font-size: 2.5em;'>{congestion_labels[congestion_pred]}</h3>
+                <div>
+                    <p style='font-size: 0.9em; color: #888; margin: 0;'>Congestion Level</p>
+                    <h3 style='font-size: 2em; margin: 5px 0;'>{congestion_labels[congestion_pred]}</h3>
+                </div>
+                <div>
+                    <p style='font-size: 0.9em; color: #888; margin: 0;'>Traffic Pattern</p>
+                    <h3 style='font-size: 1.5em; margin: 5px 0;'>{cluster_name}</h3>
+                </div>
+                <div>
+                    <p style='font-size: 0.9em; color: #888; margin: 0;'>System Status</p>
+                    <h3 style='font-size: 1.5em; margin: 5px 0;'>{anomaly_status}</h3>
                 </div>
             </div>
         </div>
         """, unsafe_allow_html=True)
         
-        res_col1, res_col2 = st.columns(2)
-        with res_col1:
-            st.metric("Status", anomaly_status)
-        with res_col2:
-            st.metric("Traffic Cluster", f"Cluster {cluster_pred}")
-            
         st.success("Analysis complete!")
     else:
         st.info("Configure the parameters in the sidebar and click 'Run Analysis' to see predictions.")
+
 
 with col2:
     st.subheader("💡 Key Insights")
@@ -213,8 +226,6 @@ with col2:
     - **Isolation Forest**: Detects unusual traffic anomalies.
     """)
     
-    st.image("https://images.unsplash.com/photo-1545147986-a9d6f210df77?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80", 
-             caption="Urban Traffic Management")
 
 # Footer & Project Details
 st.markdown("---")
